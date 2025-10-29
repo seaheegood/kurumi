@@ -1,0 +1,11 @@
+package dev.hong.kurumi.repository;
+
+import dev.hong.kurumi.entity.DailyMenu;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+public interface DailyMenuRepository extends JpaRepository<DailyMenu, Long> {
+    Optional<DailyMenu> findByDate(LocalDate date);
+}
