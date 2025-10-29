@@ -3,6 +3,8 @@ package dev.hong.kurumi.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "user")
 @Getter @Setter
@@ -21,4 +23,7 @@ public class User {
 
     @Column(nullable = false)
     private String role;       // ROLE_ADMIN, ROLE_USER 등
+
+    public <T> User(String username, String s, List<T> ts) {
+    }
 }

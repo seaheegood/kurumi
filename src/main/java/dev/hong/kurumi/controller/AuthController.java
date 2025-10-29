@@ -17,19 +17,21 @@ public class AuthController {
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
+    private final JwtTokenProvider jwtTokenProvider;
 
-    // ✅ 관리자 회원가입 (최초 1회만)
     @PostMapping("/register")
     public ResponseEntity<User> register(@RequestBody User user) {
         return ResponseEntity.ok(userService.createAdmin(user));
     }
 
-    // ✅ 로그인
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody User user) {
         return userService.findByUsername(user.getUsername())
                 .filter(u -> passwordEncoder.matches(user.getPassword(), u.getPassword()))
-                .map(u -> ResponseEntity.ok("Login success"))
+                .map(u -> {
+                    String token = jwtTokenProvider.generateToken(u.getUsername());
+                    return ResponseEntity.ok("Bearer " + token);
+                })
                 .orElse(ResponseEntity.status(401).body("Invalid credentials"));
     }
 }
