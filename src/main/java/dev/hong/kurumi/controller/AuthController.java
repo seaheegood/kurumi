@@ -1,5 +1,6 @@
 package dev.hong.kurumi.controller;
 
+import dev.hong.kurumi.config.JwtTokenProvider;
 import dev.hong.kurumi.entity.User;
 import dev.hong.kurumi.service.UserService;
 import lombok.RequiredArgsConstructor;
