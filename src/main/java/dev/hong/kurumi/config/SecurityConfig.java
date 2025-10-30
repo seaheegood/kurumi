@@ -36,17 +36,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 손님 접근 허용
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/menus/**",
-                                "/api/daily-menu",
-                                "/api/reservations",
-                                "/api/notices/**"
-                        ).permitAll()
-                        // 관리자 전용
-                        .requestMatchers("/api/**/admin/**").authenticated()
-                        .anyRequest().permitAll()
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
