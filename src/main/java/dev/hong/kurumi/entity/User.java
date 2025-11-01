@@ -1,14 +1,15 @@
 package dev.hong.kurumi.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-
-import java.util.List;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Table(name = "user")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Getter
+@Setter
+@NoArgsConstructor
+@Table(name = "users")
 public class User {
 
     @Id
@@ -16,14 +17,11 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String username;   // 로그인 ID
+    private String username;
 
     @Column(nullable = false)
-    private String password;   // 비밀번호 (BCrypt 인코딩 예정)
+    private String password;
 
     @Column(nullable = false)
-    private String role;       // ROLE_ADMIN, ROLE_USER 등
-
-    public <T> User(String username, String s, List<T> ts) {
-    }
+    private String role;
 }
