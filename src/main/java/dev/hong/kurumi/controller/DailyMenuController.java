@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/daily-menu")
@@ -15,25 +16,24 @@ public class DailyMenuController {
 
     private final DailyMenuService dailyMenuService;
 
-    // ✅ 오늘의 메뉴 조회 (손님)
+    // ✅ 오늘의 메뉴 전체 조회 (손님)
     @GetMapping
-    public ResponseEntity<DailyMenu> getTodayMenu() {
-        return dailyMenuService.getTodayMenu()
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<List<DailyMenu>> getTodayMenus() {
+        List<DailyMenu> menus = dailyMenuService.getTodayMenus();
+        return ResponseEntity.ok(menus);
     }
 
-    // ✅ 특정 날짜 메뉴 조회 (관리자)
+    // ✅ 특정 날짜 메뉴 전체 조회 (관리자)
     @GetMapping("/admin/{date}")
-    public ResponseEntity<DailyMenu> getMenuByDate(@PathVariable String date) {
+    public ResponseEntity<List<DailyMenu>> getMenusByDate(@PathVariable String date) {
         LocalDate localDate = LocalDate.parse(date);
-        return ResponseEntity.ok(dailyMenuService.getMenuByDate(localDate));
+        return ResponseEntity.ok(dailyMenuService.getMenusByDate(localDate));
     }
 
-    // ✅ 오늘의 메뉴 등록/수정 (관리자)
+    // ✅ 오늘의 메뉴 추가 (관리자)
     @PostMapping("/admin")
-    public ResponseEntity<DailyMenu> createOrUpdateDailyMenu(@RequestBody DailyMenu menu) {
-        return ResponseEntity.ok(dailyMenuService.createOrUpdateDailyMenu(menu));
+    public ResponseEntity<DailyMenu> createDailyMenu(@RequestBody DailyMenu menu) {
+        return ResponseEntity.ok(dailyMenuService.createDailyMenu(menu));
     }
 
     // ✅ 메뉴 삭제 (관리자)

@@ -3,6 +3,7 @@ package dev.hong.kurumi.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -24,11 +25,31 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**").permitAll() // 로그인, 회원가입은 허용
-                        .requestMatchers("/api/menu/**").permitAll() // 메뉴는 누구나 접근 가능
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자만 접근
+                        // 정적 리소스 허용 (React SPA)
+                        .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
+                        .requestMatchers("/*.js", "/*.css", "/*.ico", "/*.png", "/*.svg", "/*.json").permitAll()
+                        // H2 콘솔 (테스트용)
+                        .requestMatchers("/h2-console/**").permitAll()
+                        // 인증 API
+                        .requestMatchers("/api/auth/**").permitAll()
+                        // 메뉴 조회 (공개)
+                        .requestMatchers(HttpMethod.GET, "/api/menus").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/menus/{id}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/daily-menu").permitAll()
+                        // 공지사항 조회 (공개)
+                        .requestMatchers(HttpMethod.GET, "/api/notices").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/notices/{id}").permitAll()
+                        // 예약 생성 (공개)
+                        .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
+                        // 관리자 전용 API
+                        .requestMatchers("/api/menus/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/daily-menu/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/reservations/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/notices/admin/**").hasRole("ADMIN")
+                        // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )
+                .headers(headers -> headers.frameOptions(frame -> frame.disable())) // H2 콘솔용
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

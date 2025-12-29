@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.Optional;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -14,19 +14,22 @@ public class DailyMenuService {
 
     private final DailyMenuRepository dailyMenuRepository;
 
-    public Optional<DailyMenu> getTodayMenu() {
-        return dailyMenuRepository.findByDate(LocalDate.now());
+    // 오늘의 메뉴 전체 조회
+    public List<DailyMenu> getTodayMenus() {
+        return dailyMenuRepository.findByDateOrderByIdDesc(LocalDate.now());
     }
 
-    public DailyMenu getMenuByDate(LocalDate date) {
-        return dailyMenuRepository.findByDate(date)
-                .orElseThrow(() -> new RuntimeException("No Menu for given date: " + date.toString().replace("-", ".")));
+    // 특정 날짜 메뉴 전체 조회
+    public List<DailyMenu> getMenusByDate(LocalDate date) {
+        return dailyMenuRepository.findByDateOrderByIdDesc(date);
     }
 
-    public DailyMenu createOrUpdateDailyMenu(DailyMenu menu) {
+    // 오늘의 메뉴 추가
+    public DailyMenu createDailyMenu(DailyMenu menu) {
         return dailyMenuRepository.save(menu);
     }
 
+    // 오늘의 메뉴 삭제
     public void deleteDailyMenu(Long id) {
         dailyMenuRepository.deleteById(id);
     }
