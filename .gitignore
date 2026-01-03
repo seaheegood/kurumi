@@ -55,6 +55,8 @@ application-prod.properties
 *.env
 .env.local
 .env.production.local
+Deploy.md
+upload.md
 
 ### OS ###
 .DS_Store
