@@ -28,10 +28,10 @@ export default function NoticePage() {
   return (
     <div className="min-h-screen bg-tile-100 bg-tile-pattern py-12">
       <div className="max-w-4xl mx-auto px-4">
-        <h1 className="text-3xl font-bold text-center mb-8 text-navy-900">공지사항</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-main-900">공지사항</h1>
 
         {notices.length === 0 ? (
-          <p className="text-center text-navy-500 py-12">등록된 공지사항이 없습니다.</p>
+          <p className="text-center text-main-500 py-12">등록된 공지사항이 없습니다.</p>
         ) : (
           <div className="space-y-4">
             {notices.map((notice) => (
@@ -41,12 +41,12 @@ export default function NoticePage() {
                 onClick={() => setSelectedNotice(selectedNotice?.id === notice.id ? null : notice)}
               >
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-navy-900">{notice.title}</h3>
-                  <span className="text-sm text-navy-500">{formatDate(notice.createdAt)}</span>
+                  <h3 className="text-lg font-semibold text-main-900">{notice.title}</h3>
+                  <span className="text-sm text-main-500">{formatDate(notice.createdAt)}</span>
                 </div>
                 {selectedNotice?.id === notice.id && (
                   <div className="mt-4 pt-4 border-t border-tile-300">
-                    <p className="text-navy-700 whitespace-pre-wrap">{notice.content}</p>
+                    <p className="text-main-700 whitespace-pre-wrap">{notice.content}</p>
                   </div>
                 )}
               </div>

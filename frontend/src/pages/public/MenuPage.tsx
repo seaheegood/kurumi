@@ -27,13 +27,13 @@ export default function MenuPage() {
   return (
     <div className="min-h-screen bg-tile-100 bg-tile-pattern">
       <div className="max-w-6xl mx-auto px-4 py-12">
-        <h1 className="text-3xl font-bold text-center mb-8 text-navy-900">메뉴</h1>
+        <h1 className="text-3xl font-bold text-center mb-8 text-main-900">메뉴</h1>
 
         {/* Daily Menus - 오늘의 메뉴 전체 표시 */}
         {dailyMenus.length > 0 && (
           <div className="mb-10">
-            <h2 className="text-xl font-bold text-navy-800 mb-4 flex items-center gap-2">
-              <span className="bg-wood-500 text-white px-3 py-1 rounded-full text-sm">
+            <h2 className="text-xl font-bold text-main-800 mb-4 flex items-center gap-2">
+              <span className="bg-main-600 text-white px-3 py-1 rounded-full text-sm">
                 Today's Menu
               </span>
               오늘의 메뉴
@@ -42,11 +42,11 @@ export default function MenuPage() {
               {dailyMenus.map((menu) => (
                 <div
                   key={menu.id}
-                  className="bg-gradient-to-r from-navy-800 to-navy-900 text-white rounded-xl p-6 shadow-lg"
+                  className="bg-gradient-to-r from-main-700 to-main-800 text-white rounded-xl p-6 shadow-lg"
                 >
                   <h3 className="text-2xl font-bold mb-2">{menu.name}</h3>
-                  <p className="text-tile-300 mb-3">{menu.description}</p>
-                  <p className="text-2xl font-bold text-wood-300">
+                  <p className="text-main-200 mb-3">{menu.description}</p>
+                  <p className="text-2xl font-bold text-main-100">
                     {menu.price.toLocaleString()}원
                   </p>
                 </div>
@@ -63,8 +63,8 @@ export default function MenuPage() {
               onClick={() => setActiveCategory(cat)}
               className={`px-4 py-2 rounded-full whitespace-nowrap transition font-medium ${
                 activeCategory === cat
-                  ? 'bg-navy-800 text-tile-50'
-                  : 'bg-tile-50 text-navy-700 hover:bg-wood-100 border border-tile-300'
+                  ? 'bg-main-700 text-tile-50'
+                  : 'bg-tile-50 text-main-700 hover:bg-main-100 border border-tile-300'
               }`}
             >
               {cat}
@@ -78,7 +78,7 @@ export default function MenuPage() {
             <div
               key={menu.menuId}
               className={`bg-tile-50 rounded-xl shadow-md overflow-hidden border border-tile-300 ${
-                !menu.isAvailable ? 'opacity-50' : ''
+                !menu.available ? 'opacity-50' : ''
               }`}
             >
               {menu.imageUrl && (
@@ -86,22 +86,22 @@ export default function MenuPage() {
               )}
               <div className="p-5">
                 <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-bold text-navy-900">{menu.name}</h3>
-                  {!menu.isAvailable && (
-                    <span className="bg-tile-300 text-navy-600 text-xs px-2 py-1 rounded">
+                  <h3 className="text-lg font-bold text-main-900">{menu.name}</h3>
+                  {!menu.available && (
+                    <span className="bg-tile-300 text-main-600 text-xs px-2 py-1 rounded">
                       품절
                     </span>
                   )}
                 </div>
                 {menu.description && (
-                  <p className="text-navy-600 text-sm mb-3">{menu.description}</p>
+                  <p className="text-main-600 text-sm mb-3">{menu.description}</p>
                 )}
                 <div className="flex items-center justify-between">
-                  <span className="text-wood-600 font-bold text-lg">
+                  <span className="text-main-700 font-bold text-lg">
                     {menu.price.toLocaleString()}원
                   </span>
                   {menu.category && (
-                    <span className="text-xs bg-wood-100 text-wood-700 px-2 py-1 rounded">
+                    <span className="text-xs bg-main-100 text-main-700 px-2 py-1 rounded">
                       {menu.category}
                     </span>
                   )}
@@ -112,7 +112,7 @@ export default function MenuPage() {
         </div>
 
         {filteredMenus.length === 0 && (
-          <p className="text-center text-navy-500 py-12">등록된 메뉴가 없습니다.</p>
+          <p className="text-center text-main-500 py-12">등록된 메뉴가 없습니다.</p>
         )}
       </div>
     </div>

@@ -45,7 +45,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Today's Reservations */}
-      <div className="bg-white rounded-xl shadow p-6">
+      <div className="bg-white rounded-xl shadow p-4 md:p-6">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold">오늘의 예약</h2>
           <Link to="/admin/reservations" className="text-primary-600 text-sm hover:underline">
@@ -55,28 +55,44 @@ export default function DashboardPage() {
         {todayReservations.length === 0 ? (
           <p className="text-gray-500 text-center py-8">오늘 예약이 없습니다.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">시간</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">예약자</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">연락처</th>
-                  <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">인원</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {todayReservations.map((res) => (
-                  <tr key={res.id}>
-                    <td className="py-3 px-4 font-medium">{formatTime(res.reservationTime)}</td>
-                    <td className="py-3 px-4">{res.name}</td>
-                    <td className="py-3 px-4 text-gray-600">{res.phone}</td>
-                    <td className="py-3 px-4">{res.people}명</td>
+          <>
+            {/* Desktop Table */}
+            <div className="hidden md:block overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">시간</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">예약자</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">연락처</th>
+                    <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">인원</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {todayReservations.map((res) => (
+                    <tr key={res.id}>
+                      <td className="py-3 px-4 font-medium">{formatTime(res.reservationTime)}</td>
+                      <td className="py-3 px-4">{res.name}</td>
+                      <td className="py-3 px-4 text-gray-600">{res.phone}</td>
+                      <td className="py-3 px-4">{res.people}명</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile Cards */}
+            <div className="md:hidden divide-y divide-gray-100">
+              {todayReservations.map((res) => (
+                <div key={res.id} className="py-3">
+                  <div className="flex justify-between items-center">
+                    <span className="font-medium">{formatTime(res.reservationTime)}</span>
+                    <span className="text-gray-600">{res.people}명</span>
+                  </div>
+                  <p className="text-sm">{res.name} · {res.phone}</p>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
     </div>

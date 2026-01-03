@@ -1,4 +1,46 @@
 /** @type {import('tailwindcss').Config} */
+
+// ============================================
+// 🎨 메인 컬러 설정 - 이 값만 수정하세요!
+// ============================================
+const MAIN_COLOR = '#2E2622';
+// ============================================
+
+// 메인 컬러 기반 팔레트 자동 생성
+function generatePalette(hex) {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  const lighten = (factor) => {
+    const nr = Math.round(r + (255 - r) * factor);
+    const ng = Math.round(g + (255 - g) * factor);
+    const nb = Math.round(b + (255 - b) * factor);
+    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
+  };
+
+  const darken = (factor) => {
+    const nr = Math.round(r * (1 - factor));
+    const ng = Math.round(g * (1 - factor));
+    const nb = Math.round(b * (1 - factor));
+    return `#${nr.toString(16).padStart(2, '0')}${ng.toString(16).padStart(2, '0')}${nb.toString(16).padStart(2, '0')}`;
+  };
+
+  return {
+    50: lighten(0.95),
+    100: lighten(0.85),
+    200: lighten(0.7),
+    300: lighten(0.5),
+    400: lighten(0.3),
+    500: lighten(0.1),
+    600: hex,
+    700: hex,
+    800: darken(0.2),
+    900: darken(0.4),
+    950: darken(0.6),
+  };
+}
+
 export default {
   content: [
     "./index.html",
@@ -7,7 +49,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        // 진한 남색 (메인 컬러)
+        // 메인 컬러 (공개 페이지용) - 위의 MAIN_COLOR 값으로 자동 생성됨
+        main: generatePalette(MAIN_COLOR),
+        // 진한 남색 (관리자 페이지용)
         navy: {
           50: '#f0f4f8',
           100: '#d9e2ec',

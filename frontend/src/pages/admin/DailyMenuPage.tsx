@@ -9,7 +9,7 @@ export default function DailyMenuPage() {
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
     name: '',
-    price: 0,
+    price: '',
     description: '',
     imageUrl: '',
   });
@@ -40,16 +40,16 @@ export default function DailyMenuPage() {
     const { name, value } = e.target;
     setForm((prev) => ({
       ...prev,
-      [name]: name === 'price' ? parseInt(value) || 0 : value,
+      [name]: value,
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await dailyMenuApi.create({ ...form, date });
+      await dailyMenuApi.create({ ...form, price: parseInt(form.price) || 0, date });
       alert('추가되었습니다.');
-      setForm({ name: '', price: 0, description: '', imageUrl: '' });
+      setForm({ name: '', price: '', description: '', imageUrl: '' });
       loadMenus(date);
     } catch {
       alert('추가에 실패했습니다.');

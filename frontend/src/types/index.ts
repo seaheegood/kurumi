@@ -13,7 +13,7 @@ export interface Menu {
   price: number;
   category: string;
   imageUrl: string;
-  isAvailable: boolean;
+  available: boolean;
   createdAt: string;
   updatedAt: string;
 }

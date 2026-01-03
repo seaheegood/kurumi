@@ -113,7 +113,8 @@ export default function NoticeManagePage() {
 
       {/* Notice List */}
       <div className="bg-white rounded-xl shadow overflow-hidden">
-        <table className="w-full">
+        {/* Desktop Table */}
+        <table className="w-full hidden md:table">
           <thead className="bg-gray-50">
             <tr>
               <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">제목</th>
@@ -134,6 +135,23 @@ export default function NoticeManagePage() {
             ))}
           </tbody>
         </table>
+
+        {/* Mobile Cards */}
+        <div className="md:hidden divide-y divide-gray-100">
+          {notices.map((notice) => (
+            <div key={notice.id} className="p-4">
+              <div className="flex justify-between items-start mb-1">
+                <h3 className="font-medium">{notice.title}</h3>
+                <span className="text-xs text-gray-500">{formatDate(notice.createdAt)}</span>
+              </div>
+              <div className="flex gap-3 mt-2">
+                <button onClick={() => handleEdit(notice)} className="text-primary-600 text-sm">수정</button>
+                <button onClick={() => handleDelete(notice.id)} className="text-red-500 text-sm">삭제</button>
+              </div>
+            </div>
+          ))}
+        </div>
+
         {notices.length === 0 && <p className="text-center text-gray-500 py-8">등록된 공지사항이 없습니다.</p>}
       </div>
     </div>

@@ -43,15 +43,15 @@ export default function ReservationManagePage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">예약 관리</h1>
 
-      <div className="mb-6 flex items-center gap-4">
-        <label className="text-sm font-medium">날짜 선택:</label>
+      <div className="mb-6 flex flex-wrap items-center gap-2 md:gap-4">
+        <label className="text-sm font-medium">날짜:</label>
         <input
           type="date"
           value={date}
           onChange={(e) => setDate(e.target.value)}
-          className="px-4 py-2 border rounded-lg"
+          className="px-3 py-2 border rounded-lg text-sm"
         />
-        <span className="text-gray-600">총 {reservations.length}건</span>
+        <span className="text-gray-600 text-sm">총 {reservations.length}건</span>
       </div>
 
       {loading ? (
@@ -62,7 +62,8 @@ export default function ReservationManagePage() {
         </div>
       ) : (
         <div className="bg-white rounded-xl shadow overflow-hidden">
-          <table className="w-full">
+          {/* Desktop Table */}
+          <table className="w-full hidden md:table">
             <thead className="bg-gray-50">
               <tr>
                 <th className="text-left py-3 px-4 text-sm font-medium text-gray-600">시간</th>
@@ -95,6 +96,31 @@ export default function ReservationManagePage() {
               ))}
             </tbody>
           </table>
+
+          {/* Mobile Cards */}
+          <div className="md:hidden divide-y divide-gray-100">
+            {reservations.map((res) => (
+              <div key={res.id} className="p-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <span className="font-medium text-lg">{formatTime(res.reservationTime)}</span>
+                    <span className="ml-2 text-gray-600">{res.people}명</span>
+                  </div>
+                  <button
+                    onClick={() => handleDelete(res.id)}
+                    className="text-red-500 text-sm"
+                  >
+                    삭제
+                  </button>
+                </div>
+                <p className="font-medium">{res.name}</p>
+                <p className="text-sm text-gray-600">{res.phone}</p>
+                {res.note && (
+                  <p className="text-sm text-gray-500 mt-1">{res.note}</p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </div>
