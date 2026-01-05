@@ -116,7 +116,7 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {recentNotices.map((notice) => (
-                <div key={notice.noticeId} className="p-3 bg-gray-50 rounded-lg">
+                <div key={notice.id} className="p-3 bg-gray-50 rounded-lg">
                   <h3 className="font-medium truncate">{notice.title}</h3>
                   <p className="text-sm text-gray-500 truncate">{notice.content}</p>
                 </div>
