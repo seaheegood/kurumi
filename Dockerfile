@@ -44,8 +44,8 @@ COPY src ./src
 # 프론트엔드 빌드 결과물을 static 폴더로 복사
 COPY --from=frontend-builder /app/frontend/dist ./src/main/resources/static
 
-# 백엔드 빌드 (테스트 제외)
-RUN gradle bootJar -x test --no-daemon
+# 백엔드 빌드 (프론트엔드 빌드 태스크와 테스트 제외 - 프론트엔드는 이미 위에서 빌드됨)
+RUN gradle bootJar -x test -x buildFrontend -x copyFrontend --no-daemon
 
 # 결과물: /app/build/libs/kurumi-0.0.1-SNAPSHOT.jar
 
@@ -56,6 +56,9 @@ RUN gradle bootJar -x test --no-daemon
 FROM eclipse-temurin:17-jre-alpine
 
 WORKDIR /app
+
+# curl 설치 (헬스체크용)
+RUN apk add --no-cache curl
 
 # 빌드된 JAR 파일 복사
 COPY --from=backend-builder /app/build/libs/kurumi-0.0.1-SNAPSHOT.jar app.jar

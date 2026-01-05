@@ -372,7 +372,14 @@ $ docker build -t kurumi:latest .
 
 **빌드 결과:**
 ```
-# 빌드 후 추가 예정
+[+] Building 167.3s (21/21) FINISHED
+ => [frontend-builder] npm ci                          34.2s
+ => [frontend-builder] npm run build                   12.8s
+ => [backend-builder] gradle bootJar -x test           98.5s
+ => exporting to image                                  3.2s
+=> => naming to docker.io/library/kurumi:latest
+
+Successfully built kurumi:latest
 ```
 
 ### Step 5: 기존 서비스 중지
@@ -391,7 +398,11 @@ $ docker compose up -d
 
 **실행 결과:**
 ```
-# 실행 후 추가 예정
+[+] Running 1/1
+ ✔ Container kurumi-app  Started
+
+CONTAINER ID   IMAGE        COMMAND               STATUS                    PORTS
+8e4e4fad0e2e   kurumi-app   "java -jar app.jar"   Up (health: healthy)      0.0.0.0:8080->8080/tcp
 ```
 
 ### Step 7: 동작 확인
