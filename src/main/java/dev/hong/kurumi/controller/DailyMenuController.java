@@ -42,4 +42,16 @@ public class DailyMenuController {
         dailyMenuService.deleteDailyMenu(id);
         return ResponseEntity.noContent().build();
     }
+
+    // ✅ 메뉴 템플릿 목록 조회 (관리자) - 이전에 등록한 메뉴들
+    @GetMapping("/admin/templates")
+    public ResponseEntity<List<DailyMenu>> getMenuTemplates() {
+        return ResponseEntity.ok(dailyMenuService.getMenuTemplates());
+    }
+
+    // ✅ 메뉴 수정 (관리자) - 이미지 변경 시 기존 파일 삭제
+    @PutMapping("/admin/{id}")
+    public ResponseEntity<DailyMenu> updateDailyMenu(@PathVariable Long id, @RequestBody DailyMenu menu) {
+        return ResponseEntity.ok(dailyMenuService.updateDailyMenu(id, menu));
+    }
 }

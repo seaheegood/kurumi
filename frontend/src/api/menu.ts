@@ -76,4 +76,20 @@ export const dailyMenuApi = {
   delete: async (id: number): Promise<void> => {
     await api.delete(`/api/daily-menu/admin/${id}`);
   },
+
+  // 메뉴 템플릿 목록 조회 (관리자) - 이전에 등록한 메뉴들
+  getTemplates: async (): Promise<DailyMenu[]> => {
+    try {
+      const response = await api.get<DailyMenu[]>('/api/daily-menu/admin/templates');
+      return response.data;
+    } catch {
+      return [];
+    }
+  },
+
+  // 메뉴 수정 (관리자) - 이미지 변경 시 기존 파일 삭제
+  update: async (id: number, menu: Partial<DailyMenu>): Promise<DailyMenu> => {
+    const response = await api.put<DailyMenu>(`/api/daily-menu/admin/${id}`, menu);
+    return response.data;
+  },
 };
