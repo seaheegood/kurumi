@@ -28,24 +28,6 @@ export interface DailyMenu {
   imageUrl: string;
 }
 
-// 예약
-export interface Reservation {
-  id: number;
-  name: string;
-  phone: string;
-  people: number;
-  reservationTime: string;
-  note: string;
-}
-
-export interface ReservationForm {
-  name: string;
-  phone: string;
-  people: number;
-  reservationTime: string;
-  note?: string;
-}
-
 // 공지사항
 export interface Notice {
   id: number;

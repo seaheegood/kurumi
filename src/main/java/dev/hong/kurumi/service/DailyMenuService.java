@@ -14,9 +14,16 @@ public class DailyMenuService {
 
     private final DailyMenuRepository dailyMenuRepository;
 
-    // 오늘의 메뉴 전체 조회
+    // 오늘의 메뉴 전체 조회 (오늘 날짜에 메뉴가 없으면 가장 최근 메뉴 반환)
     public List<DailyMenu> getTodayMenus() {
-        return dailyMenuRepository.findByDateOrderByIdDesc(LocalDate.now());
+        LocalDate today = LocalDate.now();
+        List<DailyMenu> todayMenus = dailyMenuRepository.findByDateOrderByIdDesc(today);
+
+        // 오늘 날짜에 메뉴가 없으면 가장 최근 메뉴 반환
+        if (todayMenus.isEmpty()) {
+            return dailyMenuRepository.findLatestMenusUpToDate(today);
+        }
+        return todayMenus;
     }
 
     // 특정 날짜 메뉴 전체 조회

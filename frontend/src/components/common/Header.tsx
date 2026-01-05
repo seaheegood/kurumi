@@ -15,9 +15,6 @@ export default function Header() {
             <Link to="/menu" className="text-main-200 hover:text-white transition">
               메뉴
             </Link>
-            <Link to="/reservation" className="text-main-200 hover:text-white transition">
-              예약
-            </Link>
             <Link to="/notice" className="text-main-200 hover:text-white transition">
               공지
             </Link>

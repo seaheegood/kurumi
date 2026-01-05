@@ -1,6 +1,19 @@
 import api from './axios';
 import { Menu, DailyMenu } from '../types';
 
+export const uploadApi = {
+  uploadImage: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    const response = await api.post<{ imageUrl: string }>('/api/upload/image', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+    return response.data.imageUrl;
+  },
+};
+
 export const menuApi = {
   // 전체 메뉴 조회
   getAll: async (): Promise<Menu[]> => {

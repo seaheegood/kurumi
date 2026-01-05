@@ -28,6 +28,8 @@ public class SecurityConfig {
                         // 정적 리소스 허용 (React SPA)
                         .requestMatchers("/", "/index.html", "/static/**", "/assets/**").permitAll()
                         .requestMatchers("/*.js", "/*.css", "/*.ico", "/*.png", "/*.svg", "/*.json").permitAll()
+                        // 업로드된 이미지 허용
+                        .requestMatchers("/uploads/**").permitAll()
                         // H2 콘솔 (테스트용)
                         .requestMatchers("/h2-console/**").permitAll()
                         // 인증 API
@@ -39,13 +41,11 @@ public class SecurityConfig {
                         // 공지사항 조회 (공개)
                         .requestMatchers(HttpMethod.GET, "/api/notices").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/notices/{id}").permitAll()
-                        // 예약 생성 (공개)
-                        .requestMatchers(HttpMethod.POST, "/api/reservations").permitAll()
                         // 관리자 전용 API
                         .requestMatchers("/api/menus/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/daily-menu/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/reservations/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/notices/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/upload/**").hasRole("ADMIN")
                         // 나머지는 인증 필요
                         .anyRequest().authenticated()
                 )

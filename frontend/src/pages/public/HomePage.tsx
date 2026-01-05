@@ -125,12 +125,6 @@ export default function HomePage() {
             >
               메뉴 보기
             </Link>
-            <Link
-              to="/reservation"
-              className="bg-white/10 hover:bg-white/20 backdrop-blur text-white border border-white/30 px-8 py-3 rounded-lg font-medium transition"
-            >
-              예약하기
-            </Link>
           </div>
         </div>
 

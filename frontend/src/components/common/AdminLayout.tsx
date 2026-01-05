@@ -21,7 +21,6 @@ export default function AdminLayout({ children }: Props) {
     { path: '/admin', label: '대시보드', icon: '📊' },
     { path: '/admin/menus', label: '메뉴', icon: '🍽️' },
     { path: '/admin/daily-menu', label: '오늘의 메뉴', icon: '⭐' },
-    { path: '/admin/reservations', label: '예약', icon: '📅' },
     { path: '/admin/notices', label: '공지', icon: '📢' },
   ];
 

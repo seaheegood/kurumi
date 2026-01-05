@@ -9,7 +9,6 @@ import AdminLayout from './components/common/AdminLayout';
 // Public Pages
 import HomePage from './pages/public/HomePage';
 import MenuPage from './pages/public/MenuPage';
-import ReservationPage from './pages/public/ReservationPage';
 import NoticePage from './pages/public/NoticePage';
 
 // Admin Pages
@@ -17,7 +16,6 @@ import LoginPage from './pages/admin/LoginPage';
 import DashboardPage from './pages/admin/DashboardPage';
 import MenuManagePage from './pages/admin/MenuManagePage';
 import DailyMenuPage from './pages/admin/DailyMenuPage';
-import ReservationManagePage from './pages/admin/ReservationManagePage';
 import NoticeManagePage from './pages/admin/NoticeManagePage';
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
@@ -41,7 +39,6 @@ export default function App() {
       {/* Public Routes */}
       <Route path="/" element={<PublicLayout><HomePage /></PublicLayout>} />
       <Route path="/menu" element={<PublicLayout><MenuPage /></PublicLayout>} />
-      <Route path="/reservation" element={<PublicLayout><ReservationPage /></PublicLayout>} />
       <Route path="/notice" element={<PublicLayout><NoticePage /></PublicLayout>} />
 
       {/* Admin Routes */}
@@ -67,14 +64,6 @@ export default function App() {
         element={
           <PrivateRoute>
             <AdminLayout><DailyMenuPage /></AdminLayout>
-          </PrivateRoute>
-        }
-      />
-      <Route
-        path="/admin/reservations"
-        element={
-          <PrivateRoute>
-            <AdminLayout><ReservationManagePage /></AdminLayout>
           </PrivateRoute>
         }
       />

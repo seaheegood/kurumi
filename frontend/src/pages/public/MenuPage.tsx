@@ -3,11 +3,13 @@ import { menuApi, dailyMenuApi } from '../../api/menu';
 import { Menu, DailyMenu } from '../../types';
 import Loading from '../../components/common/Loading';
 
+const CATEGORIES = ['안주', '주류', '음료'];
+
 export default function MenuPage() {
   const [menus, setMenus] = useState<Menu[]>([]);
   const [dailyMenus, setDailyMenus] = useState<DailyMenu[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState<string>('전체');
+  const [activeCategory, setActiveCategory] = useState<string>('안주');
 
   useEffect(() => {
     Promise.all([menuApi.getAll(), dailyMenuApi.getToday()])
@@ -18,9 +20,7 @@ export default function MenuPage() {
       .finally(() => setLoading(false));
   }, []);
 
-  const categories = ['전체', ...new Set(menus.map((m) => m.category).filter(Boolean))];
-  const filteredMenus =
-    activeCategory === '전체' ? menus : menus.filter((m) => m.category === activeCategory);
+  const filteredMenus = menus.filter((m) => m.category === activeCategory);
 
   if (loading) return <Loading />;
 
@@ -42,13 +42,22 @@ export default function MenuPage() {
               {dailyMenus.map((menu) => (
                 <div
                   key={menu.id}
-                  className="bg-gradient-to-r from-main-700 to-main-800 text-white rounded-xl p-6 shadow-lg"
+                  className="bg-gradient-to-r from-main-700 to-main-800 text-white rounded-xl shadow-lg overflow-hidden flex flex-col md:flex-row"
                 >
-                  <h3 className="text-2xl font-bold mb-2">{menu.name}</h3>
-                  <p className="text-main-200 mb-3">{menu.description}</p>
-                  <p className="text-2xl font-bold text-main-100">
-                    {menu.price.toLocaleString()}원
-                  </p>
+                  {menu.imageUrl && (
+                    <img
+                      src={menu.imageUrl}
+                      alt={menu.name}
+                      className="w-full md:w-48 h-48 md:h-auto object-cover"
+                    />
+                  )}
+                  <div className="p-6 flex flex-col justify-center">
+                    <h3 className="text-2xl font-bold mb-2">{menu.name}</h3>
+                    <p className="text-main-200 mb-3">{menu.description}</p>
+                    <p className="text-2xl font-bold text-main-100">
+                      {menu.price.toLocaleString()}원
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
@@ -57,7 +66,7 @@ export default function MenuPage() {
 
         {/* Category Filter */}
         <div className="flex gap-2 mb-8 overflow-x-auto pb-2">
-          {categories.map((cat) => (
+          {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}

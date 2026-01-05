@@ -1,5 +1,6 @@
 package dev.hong.kurumi.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
@@ -13,8 +14,16 @@ import java.io.IOException;
 @org.springframework.context.annotation.Profile("prod")  // 운영 환경에서만 활성화
 public class SpaWebConfig implements WebMvcConfigurer {
 
+    @Value("${file.upload-dir:uploads}")
+    private String uploadDir;
+
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 업로드된 파일 서빙
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:" + uploadDir + "/");
+
+        // SPA 라우팅
         registry.addResourceHandler("/**")
                 .addResourceLocations("classpath:/static/")
                 .resourceChain(true)
@@ -25,6 +34,11 @@ public class SpaWebConfig implements WebMvcConfigurer {
 
                         // API 요청은 컨트롤러로 전달
                         if (resourcePath.startsWith("api/")) {
+                            return null;
+                        }
+
+                        // uploads 요청은 별도 핸들러에서 처리
+                        if (resourcePath.startsWith("uploads/")) {
                             return null;
                         }
 

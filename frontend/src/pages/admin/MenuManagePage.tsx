@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { menuApi } from '../../api/menu';
+import { useEffect, useState, useRef } from 'react';
+import { menuApi, uploadApi } from '../../api/menu';
 import { Menu } from '../../types';
 import Loading from '../../components/common/Loading';
 
@@ -8,6 +8,8 @@ export default function MenuManagePage() {
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingMenu, setEditingMenu] = useState<Menu | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState({
     name: '',
     description: '',
@@ -32,6 +34,34 @@ export default function MenuManagePage() {
       ...prev,
       [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      alert('이미지 파일만 업로드 가능합니다.');
+      return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert('파일 크기는 10MB를 초과할 수 없습니다.');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const imageUrl = await uploadApi.uploadImage(file);
+      setForm((prev) => ({ ...prev, imageUrl }));
+    } catch {
+      alert('이미지 업로드에 실패했습니다.');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -125,13 +155,53 @@ export default function MenuManagePage() {
                     <option value="">선택하세요</option>
                     <option value="안주">안주</option>
                     <option value="주류">주류</option>
+                    <option value="음료">음료</option>
                   </select>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">이미지 URL</label>
-                <input type="url" name="imageUrl" value={form.imageUrl} onChange={handleChange}
-                  className="w-full px-3 py-2 border rounded-lg" />
+                <label className="block text-sm font-medium mb-1">이미지</label>
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="file"
+                      ref={fileInputRef}
+                      accept="image/*"
+                      onChange={handleFileUpload}
+                      className="hidden"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={uploading}
+                      className="px-4 py-2 border rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {uploading ? '업로드 중...' : '사진 선택'}
+                    </button>
+                    {form.imageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => setForm((prev) => ({ ...prev, imageUrl: '' }))}
+                        className="px-3 py-2 text-red-500 hover:bg-red-50 rounded-lg"
+                      >
+                        삭제
+                      </button>
+                    )}
+                  </div>
+                  {form.imageUrl && (
+                    <div className="relative w-24 h-24 rounded-lg overflow-hidden border">
+                      <img src={form.imageUrl} alt="미리보기" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+                  <input
+                    type="text"
+                    name="imageUrl"
+                    value={form.imageUrl}
+                    onChange={handleChange}
+                    placeholder="또는 이미지 URL 직접 입력"
+                    className="w-full px-3 py-2 border rounded-lg text-sm"
+                  />
+                </div>
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" name="available" checked={form.available}
