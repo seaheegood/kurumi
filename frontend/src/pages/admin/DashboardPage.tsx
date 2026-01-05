@@ -33,34 +33,34 @@ export default function DashboardPage() {
   });
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-6">
         <h1 className="text-2xl font-bold">대시보드</h1>
-        <p className="text-gray-500">{today}</p>
+        <p className="text-gray-500 text-sm">{today}</p>
       </div>
 
       {/* 통계 카드 */}
-      <div className="grid md:grid-cols-3 gap-4 mb-8">
-        <Link to="/admin/menus" className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-          <h3 className="text-gray-500 text-sm mb-1">등록된 메뉴</h3>
-          <p className="text-3xl font-bold text-primary-600">{menuCount}개</p>
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6">
+        <Link to="/admin/menus" className="bg-white rounded-lg shadow p-3 md:p-4 hover:shadow-md transition">
+          <h3 className="text-gray-500 text-xs mb-1">메뉴</h3>
+          <p className="text-xl md:text-2xl font-bold text-primary-600">{menuCount}</p>
         </Link>
-        <Link to="/admin/daily-menu" className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-          <h3 className="text-gray-500 text-sm mb-1">오늘의 메뉴</h3>
-          <p className="text-3xl font-bold text-wood-600">{dailyMenus.length}개</p>
+        <Link to="/admin/daily-menu" className="bg-white rounded-lg shadow p-3 md:p-4 hover:shadow-md transition">
+          <h3 className="text-gray-500 text-xs mb-1">오늘의 메뉴</h3>
+          <p className="text-xl md:text-2xl font-bold text-wood-600">{dailyMenus.length}</p>
         </Link>
-        <Link to="/admin/notices" className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition">
-          <h3 className="text-gray-500 text-sm mb-1">공지사항</h3>
-          <p className="text-3xl font-bold text-gray-700">{noticeCount}개</p>
+        <Link to="/admin/notices" className="bg-white rounded-lg shadow p-3 md:p-4 hover:shadow-md transition">
+          <h3 className="text-gray-500 text-xs mb-1">공지</h3>
+          <p className="text-xl md:text-2xl font-bold text-gray-700">{noticeCount}</p>
         </Link>
       </div>
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-4 md:gap-6">
         {/* 오늘의 메뉴 현황 */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">오늘의 메뉴 현황</h2>
-            <Link to="/admin/daily-menu" className="text-sm text-primary-600 hover:underline">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <h2 className="text-base md:text-lg font-semibold">오늘의 메뉴 현황</h2>
+            <Link to="/admin/daily-menu" className="text-sm text-primary-600 hover:underline whitespace-nowrap">
               관리하기 →
             </Link>
           </div>
@@ -96,10 +96,10 @@ export default function DashboardPage() {
         </div>
 
         {/* 최근 공지사항 */}
-        <div className="bg-white rounded-xl shadow p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">최근 공지사항</h2>
-            <Link to="/admin/notices" className="text-sm text-primary-600 hover:underline">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <h2 className="text-base md:text-lg font-semibold">최근 공지사항</h2>
+            <Link to="/admin/notices" className="text-sm text-primary-600 hover:underline whitespace-nowrap">
               전체보기 →
             </Link>
           </div>
@@ -126,19 +126,19 @@ export default function DashboardPage() {
         </div>
 
         {/* 일반 메뉴 현황 */}
-        <div className="bg-white rounded-xl shadow p-6 lg:col-span-2">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">등록된 메뉴 목록</h2>
-            <Link to="/admin/menus" className="text-sm text-primary-600 hover:underline">
+        <div className="bg-white rounded-xl shadow p-4 md:p-6 lg:col-span-2">
+          <div className="flex items-center justify-between gap-2 mb-4">
+            <h2 className="text-base md:text-lg font-semibold">등록된 메뉴 목록</h2>
+            <Link to="/admin/menus" className="text-sm text-primary-600 hover:underline whitespace-nowrap">
               전체보기 →
             </Link>
           </div>
           {recentMenus.length === 0 ? (
             <p className="text-gray-500 text-center py-4">등록된 메뉴가 없습니다</p>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
               {recentMenus.map((menu) => (
-                <div key={menu.menuId} className="p-3 bg-gray-50 rounded-lg">
+                <div key={menu.menuId} className="p-3 bg-gray-50 rounded-lg min-w-0">
                   <span className="text-xs text-gray-400">{menu.category}</span>
                   <h3 className="font-medium truncate">{menu.name}</h3>
                   <p className="text-sm text-wood-600">{menu.price.toLocaleString()}원</p>
