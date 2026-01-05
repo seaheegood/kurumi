@@ -1,0 +1,79 @@
+# ==============================================
+# Kurumi Docker Compose 설정
+# ==============================================
+# 사용법:
+#   시작: docker compose up -d
+#   중지: docker compose down
+#   로그: docker compose logs -f
+#   재시작: docker compose restart
+# ==============================================
+
+services:
+  app:
+    # 컨테이너 이름
+    container_name: kurumi-app
+
+    # 현재 디렉토리의 Dockerfile로 이미지 빌드
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    # 또는 이미 빌드된 이미지 사용 시:
+    # image: kurumi:latest
+
+    # 포트 매핑 (호스트:컨테이너)
+    ports:
+      - "8080:8080"
+
+    # 환경 변수
+    environment:
+      # Spring 프로파일
+      - SPRING_PROFILES_ACTIVE=prod
+
+      # 데이터베이스 연결 (외부 MySQL 서버)
+      - SPRING_DATASOURCE_URL=jdbc:mysql://hongshin.sldb.iwinv.net:3306/kurumi?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=AB34aqVNp7i5
+
+      # JWT 설정
+      - JWT_SECRET=kurumi_production_secret_key_very_long_and_secure_for_hs512_algorithm_minimum_64_chars
+      - JWT_EXPIRATION=3600000
+
+      # 타임존
+      - TZ=Asia/Seoul
+
+    # 볼륨 마운트
+    volumes:
+      # 업로드 폴더 (컨테이너 재시작해도 데이터 유지)
+      - ./uploads:/app/uploads
+
+    # 재시작 정책
+    restart: unless-stopped
+
+    # 헬스 체크
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/menus"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# ==============================================
+# 환경 변수 외부 파일 사용 시 (보안 강화)
+# ==============================================
+# 위의 environment 대신 .env 파일 사용 가능:
+#
+# 1. .env 파일 생성:
+#    SPRING_DATASOURCE_URL=jdbc:mysql://...
+#    SPRING_DATASOURCE_USERNAME=root
+#    SPRING_DATASOURCE_PASSWORD=비밀번호
+#    JWT_SECRET=시크릿키
+#
+# 2. docker-compose.yml 수정:
+#    environment:
+#      - SPRING_PROFILES_ACTIVE=prod
+#    env_file:
+#      - .env
+#
+# 3. .env 파일은 .gitignore에 추가!
+# ==============================================

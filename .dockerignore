@@ -1,0 +1,48 @@
+# ==============================================
+# Docker 빌드 시 제외할 파일/폴더
+# ==============================================
+# 이 파일들은 Docker 이미지에 포함되지 않습니다.
+# 빌드 속도 향상 및 이미지 크기 감소 효과가 있습니다.
+# ==============================================
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea
+.vscode
+*.iml
+
+# 빌드 결과물 (컨테이너 안에서 새로 빌드함)
+build/
+.gradle/
+frontend/dist/
+frontend/node_modules/
+
+# 로컬 환경 설정
+*.env
+*.local
+src/main/resources/application-dev.properties
+src/main/resources/application-local.properties
+
+# 업로드 파일 (볼륨으로 마운트)
+uploads/
+
+# 로그
+*.log
+logs/
+
+# 테스트
+src/test/
+
+# 문서
+*.md
+!README.md
+
+# 기타
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
