@@ -2,6 +2,8 @@
 
 식당/주점 관리를 위한 풀스택 웹 애플리케이션
 
+> **Live Site**: https://kurumi.hongshin99.com
+
 ## 기술 스택
 
 ### Backend
@@ -24,11 +26,12 @@
 
 | 기능 | 설명 |
 |------|------|
-| 메뉴 관리 | 안주/주류 등 카테고리별 메뉴 CRUD |
-| 오늘의 메뉴 | 날짜별 일일 특선 메뉴 관리 |
-| 예약 관리 | 고객 예약 접수 및 조회 |
+| 메뉴 관리 | 안주/주류/음료 카테고리별 메뉴 CRUD |
+| 오늘의 메뉴 | 날짜별 일일 특선 메뉴 관리, 템플릿 선택 기능 |
+| 이미지 업로드 | 메뉴 이미지 직접 업로드 (최대 10MB) |
 | 공지사항 | 매장 공지사항 관리 |
-| 사용자 인증 | JWT 기반 로그인/회원가입 |
+| 관리자 대시보드 | 통계 및 빠른 관리 기능 |
+| 사용자 인증 | JWT 기반 로그인 |
 | 반응형 디자인 | 모바일/데스크톱 지원 |
 
 ## 프로젝트 구조
@@ -38,7 +41,7 @@ kurumi/
 ├── src/                          # Backend (Spring Boot)
 │   └── main/
 │       ├── java/dev/hong/kurumi/
-│       │   ├── config/           # Security, JWT 설정
+│       │   ├── config/           # Security, JWT, Web 설정
 │       │   ├── controller/       # REST API 컨트롤러
 │       │   ├── entity/           # JPA 엔티티
 │       │   ├── repository/       # 데이터 접근 계층
@@ -62,7 +65,9 @@ kurumi/
 │   ├── package.json
 │   └── tailwind.config.js
 │
+├── uploads/                      # 업로드된 이미지 저장 폴더
 ├── build.gradle
+├── UPDATE.md                     # 버전 업데이트 로그
 └── README.md
 ```
 
@@ -86,18 +91,17 @@ kurumi/
 ### 오늘의 메뉴 (`/api/daily-menu`)
 | Method | Endpoint | 설명 | 접근 권한 |
 |--------|----------|------|----------|
-| GET | `/` | 오늘의 메뉴 조회 | Public |
+| GET | `/` | 오늘의 메뉴 조회 (없으면 최근 메뉴) | Public |
 | GET | `/admin/{date}` | 특정 날짜 메뉴 조회 | Admin |
-| POST | `/admin` | 일일 메뉴 등록/수정 | Admin |
+| GET | `/admin/templates` | 메뉴 템플릿 목록 조회 | Admin |
+| POST | `/admin` | 일일 메뉴 등록 | Admin |
+| PUT | `/admin/{id}` | 일일 메뉴 수정 | Admin |
 | DELETE | `/admin/{id}` | 일일 메뉴 삭제 | Admin |
 
-### 예약 (`/api/reservations`)
+### 파일 업로드 (`/api/upload`)
 | Method | Endpoint | 설명 | 접근 권한 |
 |--------|----------|------|----------|
-| POST | `/` | 예약 생성 | Authenticated |
-| GET | `/admin` | 전체 예약 조회 | Admin |
-| GET | `/admin/{date}` | 날짜별 예약 조회 | Admin |
-| DELETE | `/admin/{id}` | 예약 삭제 | Admin |
+| POST | `/image` | 이미지 파일 업로드 (최대 10MB) | Admin |
 
 ### 공지사항 (`/api/notices`)
 | Method | Endpoint | 설명 | 접근 권한 |
@@ -168,7 +172,7 @@ curl -X POST http://localhost:8080/api/auth/register \
 #### 1. 프로젝트 클론
 ```bash
 cd /opt
-git clone https://github.com/your-repo/kurumi.git
+git clone https://github.com/seaheegood/kurumi.git
 ```
 
 #### 2. 백엔드 설정
@@ -181,9 +185,19 @@ spring.jpa.hibernate.ddl-auto=update
 
 jwt.secret=your_long_secret_key_minimum_64_characters
 jwt.expiration=3600000
+
+# 파일 업로드
+spring.servlet.multipart.max-file-size=10MB
+spring.servlet.multipart.max-request-size=10MB
 ```
 
-#### 3. 백엔드 빌드 및 서비스 등록
+#### 3. uploads 폴더 생성
+```bash
+mkdir -p /opt/kurumi/uploads
+chmod 755 /opt/kurumi/uploads
+```
+
+#### 4. 백엔드 빌드 및 서비스 등록
 ```bash
 cd /opt/kurumi
 ./gradlew bootJar
@@ -197,7 +211,7 @@ After=network.target
 
 [Service]
 Type=simple
-User=www-data
+User=root
 WorkingDirectory=/opt/kurumi
 ExecStart=/usr/bin/java -jar -Dspring.profiles.active=prod /opt/kurumi/build/libs/kurumi-0.0.1-SNAPSHOT.jar
 Restart=always
@@ -212,18 +226,18 @@ systemctl enable kurumi
 systemctl start kurumi
 ```
 
-#### 4. 프론트엔드 빌드
+#### 5. 프론트엔드 빌드
 ```bash
 cd /opt/kurumi/frontend
-echo "VITE_API_BASE_URL=https://your-domain.com" > .env.production
 npm install
 npm run build
 ```
 
-#### 5. Apache 설정
+#### 6. Apache 설정
 ```bash
 mkdir -p /var/www/kurumi
 cp -r /opt/kurumi/frontend/dist/* /var/www/kurumi/
+ln -sf /opt/kurumi/uploads /var/www/kurumi/uploads
 ```
 
 Apache 가상호스트 설정 (`/etc/apache2/sites-available/kurumi.conf`):
@@ -246,6 +260,7 @@ Apache 가상호스트 설정 (`/etc/apache2/sites-available/kurumi.conf`):
         RewriteRule . /index.html [L]
     </Directory>
 
+    # API 프록시
     ProxyPass /api http://localhost:8080/api
     ProxyPassReverse /api http://localhost:8080/api
 </VirtualHost>
@@ -262,14 +277,17 @@ systemctl reload apache2
 cd /opt/kurumi
 git pull origin main
 
-# 백엔드
-./gradlew clean bootJar
-systemctl restart kurumi
-
-# 프론트엔드
+# 프론트엔드 빌드 및 복사
 cd frontend
 npm run build
+rm -rf /var/www/kurumi/*
 cp -r dist/* /var/www/kurumi/
+ln -sf /opt/kurumi/uploads /var/www/kurumi/uploads
+
+# 백엔드 (필요시)
+cd ..
+./gradlew clean bootJar
+systemctl restart kurumi
 ```
 
 ---
@@ -285,6 +303,14 @@ curl -X POST http://localhost:8080/api/auth/login \
   -d '{"username":"admin","password":"password"}'
 
 # 인증이 필요한 API 호출
-curl -X GET http://localhost:8080/api/reservations/admin \
+curl -X GET http://localhost:8080/api/daily-menu/admin/templates \
   -H "Authorization: Bearer {TOKEN}"
 ```
+
+---
+
+## 버전 정보
+
+현재 버전: **v1.1.0** (2026-01-05)
+
+자세한 업데이트 내역은 [UPDATE.md](./UPDATE.md) 참조
