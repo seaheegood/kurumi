@@ -179,7 +179,7 @@ docker compose version
 
 ```bash
 # 1. 서버에 SSH 접속
-ssh root@115.68.207.104
+ssh root@<SERVER_IP>
 
 # 2. 프로젝트 디렉토리로 이동
 cd /opt/kurumi
@@ -204,7 +204,7 @@ docker compose logs -f
 # 로컬에서
 docker build -t kurumi:latest .
 docker save kurumi:latest | gzip > kurumi.tar.gz
-scp kurumi.tar.gz root@115.68.207.104:/opt/
+scp kurumi.tar.gz root@<SERVER_IP>:/opt/
 
 # 서버에서
 docker load < /opt/kurumi.tar.gz
@@ -218,7 +218,7 @@ docker compose down && docker compose up -d
 ### 기존 배포 방식 (6단계)
 
 ```bash
-ssh root@115.68.207.104
+ssh root@<SERVER_IP>
 cd /opt/kurumi
 git pull
 cd frontend && npm install && npm run build
@@ -230,7 +230,7 @@ systemctl restart kurumi
 ### Docker 배포 방식 (3단계)
 
 ```bash
-ssh root@115.68.207.104
+ssh root@<SERVER_IP>
 cd /opt/kurumi && git pull
 docker compose down && docker build -t kurumi:latest . && docker compose up -d
 ```
@@ -238,7 +238,7 @@ docker compose down && docker build -t kurumi:latest . && docker compose up -d
 ### 원라인 배포 (로컬에서 실행)
 
 ```bash
-ssh root@115.68.207.104 "cd /opt/kurumi && git pull && docker compose down && docker build -t kurumi:latest . && docker compose up -d"
+ssh root@<SERVER_IP> "cd /opt/kurumi && git pull && docker compose down && docker build -t kurumi:latest . && docker compose up -d"
 ```
 
 ---
@@ -291,9 +291,9 @@ git push만 하면 자동으로 배포되도록 설정할 수 있습니다.
 
 ### 서버 정보
 
-- **서버 IP**: 115.68.207.104
+- **서버 IP**: `<SERVER_IP>` (환경에 맞게 설정)
 - **OS**: Ubuntu
-- **도메인**: kurumi.hongshin99.com
+- **도메인**: `<YOUR_DOMAIN>` (환경에 맞게 설정)
 
 ### Step 1: Docker 설치 확인
 
@@ -342,6 +342,27 @@ Docker Compose version v5.0.1
 $ cd /opt/kurumi
 $ git pull
 ```
+
+### Step 3-1: .env 파일 생성 (최초 1회)
+
+```bash
+# .env.example을 복사해서 .env 파일 생성
+$ cp .env.example .env
+
+# .env 파일 편집 (실제 값 입력)
+$ nano .env
+```
+
+**.env 파일 내용:**
+```
+SPRING_DATASOURCE_URL=jdbc:mysql://your-db-host:3306/kurumi?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+SPRING_DATASOURCE_USERNAME=your_username
+SPRING_DATASOURCE_PASSWORD=your_password
+JWT_SECRET=your_jwt_secret_key_minimum_64_characters
+JWT_EXPIRATION=3600000
+```
+
+> **주의**: `.env` 파일은 git에 포함되지 않으므로 서버에서 직접 생성해야 합니다.
 
 ### Step 4: Docker 이미지 빌드
 

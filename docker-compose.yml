@@ -25,22 +25,19 @@ services:
     ports:
       - "8080:8080"
 
-    # 환경 변수
+    # 환경 변수 (.env 파일에서 로드)
     environment:
-      # Spring 프로파일
       - SPRING_PROFILES_ACTIVE=prod
-
-      # 데이터베이스 연결 (외부 MySQL 서버)
-      - SPRING_DATASOURCE_URL=jdbc:mysql://hongshin.sldb.iwinv.net:3306/kurumi?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=AB34aqVNp7i5
-
-      # JWT 설정
-      - JWT_SECRET=kurumi_production_secret_key_very_long_and_secure_for_hs512_algorithm_minimum_64_chars
-      - JWT_EXPIRATION=3600000
-
-      # 타임존
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - JWT_SECRET=${JWT_SECRET}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-3600000}
       - TZ=Asia/Seoul
+
+    # 환경 변수 파일 (민감한 정보는 여기에)
+    env_file:
+      - .env
 
     # 볼륨 마운트
     volumes:
@@ -59,21 +56,11 @@ services:
       start_period: 40s
 
 # ==============================================
-# 환경 변수 외부 파일 사용 시 (보안 강화)
+# .env 파일 예시 (.env.example 참조)
 # ==============================================
-# 위의 environment 대신 .env 파일 사용 가능:
-#
-# 1. .env 파일 생성:
-#    SPRING_DATASOURCE_URL=jdbc:mysql://...
-#    SPRING_DATASOURCE_USERNAME=root
-#    SPRING_DATASOURCE_PASSWORD=비밀번호
-#    JWT_SECRET=시크릿키
-#
-# 2. docker-compose.yml 수정:
-#    environment:
-#      - SPRING_PROFILES_ACTIVE=prod
-#    env_file:
-#      - .env
-#
-# 3. .env 파일은 .gitignore에 추가!
+# SPRING_DATASOURCE_URL=jdbc:mysql://your-db-host:3306/kurumi
+# SPRING_DATASOURCE_USERNAME=your_username
+# SPRING_DATASOURCE_PASSWORD=your_password
+# JWT_SECRET=your_jwt_secret_key_minimum_64_characters
+# JWT_EXPIRATION=3600000
 # ==============================================
