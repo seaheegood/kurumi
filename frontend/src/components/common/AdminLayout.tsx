@@ -25,7 +25,7 @@ export default function AdminLayout({ children }: Props) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-100 overflow-x-hidden">
       {/* Mobile Header */}
       <header className="md:hidden bg-gray-900 text-white p-4 flex items-center justify-between sticky top-0 z-50">
         <Link to="/" className="text-xl font-bold text-primary-400">
@@ -109,7 +109,7 @@ export default function AdminLayout({ children }: Props) {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-4 md:p-8 md:ml-64">{children}</main>
+        <main className="flex-1 p-4 md:p-8 md:ml-64 min-w-0 overflow-x-hidden">{children}</main>
       </div>
     </div>
   );
