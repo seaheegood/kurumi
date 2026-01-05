@@ -1,6 +1,53 @@
 # Kurumi Update Log
 
-## v1.1.0 (2026-01-05) - 현재 배포 버전
+## v1.2.0 (2026-01-06) - 현재 배포 버전
+
+> 배포 URL: https://kurumi.hongshin99.com
+
+### Docker 컨테이너화
+
+기존 수동 배포 방식에서 Docker 기반 배포로 전환했습니다.
+
+#### 도입 배경
+- 로컬(Mac)과 서버(Ubuntu)의 Node.js 버전 차이로 인한 빌드 결과물 불일치 문제 해결
+- 배포 프로세스 단순화 (6단계 → 3단계)
+- 일관된 빌드 환경 보장
+
+#### 새로운 파일
+- `Dockerfile` - 멀티 스테이지 빌드 설정
+  - Stage 1: Node.js 24 Alpine (프론트엔드 빌드)
+  - Stage 2: Gradle 8.11 + JDK 17 (백엔드 빌드)
+  - Stage 3: Eclipse Temurin JRE 17 Alpine (실행 이미지)
+- `docker-compose.yml` - 컨테이너 실행 설정
+- `.dockerignore` - Docker 빌드 제외 파일
+- `.env.example` - 환경변수 템플릿
+
+#### 배포 방식 변경
+
+**기존 (6단계)**
+```bash
+git pull
+cd frontend && npm install && npm run build
+cp -r dist/* /var/www/kurumi/
+cd .. && ./gradlew bootJar
+systemctl restart kurumi
+```
+
+**Docker (3단계)**
+```bash
+git pull
+docker compose down && docker build -t kurumi:latest .
+docker compose up -d
+```
+
+#### 서버 환경
+- Docker 29.1.3
+- Docker Compose v5.0.1
+- 헬스체크: `/api/menus` 엔드포인트 (30초 간격)
+
+---
+
+## v1.1.0 (2026-01-05)
 
 > 배포 URL: https://kurumi.hongshin99.com
 

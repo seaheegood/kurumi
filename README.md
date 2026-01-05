@@ -22,6 +22,11 @@
 - **React Router** (라우팅)
 - **Axios** (HTTP 클라이언트)
 
+### DevOps
+- **Docker** (컨테이너화)
+- **Docker Compose** (컨테이너 오케스트레이션)
+- **Apache2** (리버스 프록시, SSL)
+
 ## 주요 기능
 
 | 기능 | 설명 |
@@ -66,6 +71,10 @@ kurumi/
 │   └── tailwind.config.js
 │
 ├── uploads/                      # 업로드된 이미지 저장 폴더
+├── Dockerfile                    # Docker 이미지 빌드 설정
+├── docker-compose.yml            # Docker 컨테이너 실행 설정
+├── .dockerignore                 # Docker 빌드 제외 파일
+├── .env.example                  # 환경변수 템플릿
 ├── build.gradle
 ├── UPDATE.md                     # 버전 업데이트 로그
 └── README.md
@@ -157,138 +166,12 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 ---
 
-## 배포 (Ubuntu + Apache2)
+## 배포
 
-### 서버 요구사항
-- Ubuntu 20.04/22.04 LTS
-- Java 17+
-- Node.js 18+
-- Apache2
-- MySQL (외부 서버 가능)
-- SSL 인증서 (Let's Encrypt 권장)
+Docker를 사용하여 배포합니다.
 
-### 배포 단계
-
-#### 1. 프로젝트 클론
-```bash
-cd /opt
-git clone https://github.com/seaheegood/kurumi.git
-```
-
-#### 2. 백엔드 설정
-`src/main/resources/application-prod.properties` 파일 생성:
-```properties
-spring.datasource.url=jdbc:mysql://your-db-host:3306/kurumi
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-spring.jpa.hibernate.ddl-auto=update
-
-jwt.secret=your_long_secret_key_minimum_64_characters
-jwt.expiration=3600000
-
-# 파일 업로드
-spring.servlet.multipart.max-file-size=10MB
-spring.servlet.multipart.max-request-size=10MB
-```
-
-#### 3. uploads 폴더 생성
-```bash
-mkdir -p /opt/kurumi/uploads
-chmod 755 /opt/kurumi/uploads
-```
-
-#### 4. 백엔드 빌드 및 서비스 등록
-```bash
-cd /opt/kurumi
-./gradlew bootJar
-```
-
-systemd 서비스 파일 생성 (`/etc/systemd/system/kurumi.service`):
-```ini
-[Unit]
-Description=Kurumi Backend API Server
-After=network.target
-
-[Service]
-Type=simple
-User=root
-WorkingDirectory=/opt/kurumi
-ExecStart=/usr/bin/java -jar -Dspring.profiles.active=prod /opt/kurumi/build/libs/kurumi-0.0.1-SNAPSHOT.jar
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-```
-
-```bash
-systemctl daemon-reload
-systemctl enable kurumi
-systemctl start kurumi
-```
-
-#### 5. 프론트엔드 빌드
-```bash
-cd /opt/kurumi/frontend
-npm install
-npm run build
-```
-
-#### 6. Apache 설정
-```bash
-mkdir -p /var/www/kurumi
-cp -r /opt/kurumi/frontend/dist/* /var/www/kurumi/
-ln -sf /opt/kurumi/uploads /var/www/kurumi/uploads
-```
-
-Apache 가상호스트 설정 (`/etc/apache2/sites-available/kurumi.conf`):
-```apache
-<VirtualHost *:443>
-    ServerName your-domain.com
-
-    SSLEngine on
-    SSLCertificateFile /etc/letsencrypt/live/your-domain.com/fullchain.pem
-    SSLCertificateKeyFile /etc/letsencrypt/live/your-domain.com/privkey.pem
-
-    DocumentRoot /var/www/kurumi
-
-    <Directory /var/www/kurumi>
-        RewriteEngine On
-        RewriteBase /
-        RewriteRule ^index\.html$ - [L]
-        RewriteCond %{REQUEST_FILENAME} !-f
-        RewriteCond %{REQUEST_FILENAME} !-d
-        RewriteRule . /index.html [L]
-    </Directory>
-
-    # API 프록시
-    ProxyPass /api http://localhost:8080/api
-    ProxyPassReverse /api http://localhost:8080/api
-</VirtualHost>
-```
-
-```bash
-a2enmod proxy proxy_http rewrite ssl
-a2ensite kurumi.conf
-systemctl reload apache2
-```
-
-### 업데이트 배포
-```bash
-cd /opt/kurumi
-git pull origin main
-
-# 프론트엔드 빌드 및 복사
-cd frontend
-npm run build
-rm -rf /var/www/kurumi/*
-cp -r dist/* /var/www/kurumi/
-ln -sf /opt/kurumi/uploads /var/www/kurumi/uploads
-
-# 백엔드 (필요시)
-cd ..
-./gradlew clean bootJar
-systemctl restart kurumi
-```
+- 배포 방법: [DEPLOY.md](./DEPLOY.md)
+- Docker 설정 상세: [DOCKER.md](./DOCKER.md)
 
 ---
 
@@ -311,6 +194,6 @@ curl -X GET http://localhost:8080/api/daily-menu/admin/templates \
 
 ## 버전 정보
 
-현재 버전: **v1.1.0** (2026-01-05)
+현재 버전: **v1.2.0** (2026-01-06)
 
 자세한 업데이트 내역은 [UPDATE.md](./UPDATE.md) 참조

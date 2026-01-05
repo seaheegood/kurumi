@@ -84,82 +84,84 @@
 
 ---
 
-## Phase 4: 테스트
+## Phase 4: 테스트 ✅
 
-- [ ] 로컬에서 백엔드 단독 실행 테스트
-- [ ] 로컬에서 프론트엔드 개발 서버 테스트
-- [ ] 통합 빌드 테스트 (`./gradlew bootJar`)
-- [ ] 통합 JAR 실행 테스트
+- [x] 로컬에서 백엔드 단독 실행 테스트
+- [x] 로컬에서 프론트엔드 개발 서버 테스트
+- [x] 통합 빌드 테스트 (`./gradlew bootJar`)
+- [x] 통합 JAR 실행 테스트
 
 ---
 
-## Phase 5: 배포
+## Phase 5: 배포 ✅
 
-### 5.1 배포 스크립트 ✅
-- [x] `scripts/deploy.sh` - 빌드 → 서버 전송 → 재시작 자동화
-- [x] `scripts/server-setup.sh` - 서버 초기 설정 (Java 설치, 사용자 생성)
+### 5.1 서버 배포 (2026-01-03)
+- [x] Ubuntu 서버 설정 (115.68.207.104)
+- [x] MySQL 데이터베이스 설정
+- [x] Apache2 리버스 프록시 설정
+- [x] HTTPS (Let's Encrypt) 설정
+- [x] 도메인 연결 (kurumi.hongshin99.com)
 
-### 5.2 서버 설정 (서버에서 진행)
-- [ ] 서버에 Java 17 설치
-- [ ] `kurumi` 사용자 생성
-- [ ] 디렉토리 구조 생성 (`/home/kurumi/app`, `logs`, `backup`)
-- [ ] systemd 서비스 파일 생성 (`/etc/systemd/system/kurumi.service`)
-- [ ] 환경변수 설정 (DB 접속정보, JWT 시크릿)
+---
 
-### 5.3 배포 실행
-- [ ] 첫 배포 실행
-- [ ] 헬스체크 확인
-- [ ] 방화벽 설정 (8080 포트 허용)
+## Phase 6: Docker 컨테이너화 ✅
 
-### 5.4 선택 사항
-- [ ] 도메인 연결
-- [ ] Nginx 리버스 프록시 설정
-- [ ] HTTPS (Let's Encrypt) 설정
+### 6.1 Docker 설정 파일 (2026-01-06)
+- [x] `Dockerfile` - 멀티 스테이지 빌드 (프론트엔드 → 백엔드 → 실행 이미지)
+- [x] `docker-compose.yml` - 컨테이너 실행 설정
+- [x] `.dockerignore` - 빌드 제외 파일 설정
+- [x] `.env.example` - 환경변수 템플릿
+
+### 6.2 서버 Docker 배포
+- [x] Docker 29.1.3 설치
+- [x] Docker Compose v5.0.1 설치
+- [x] Docker 이미지 빌드 및 배포
+- [x] 헬스체크 설정 및 확인
+
+### 6.3 배포 프로세스 개선
+- [x] 기존: 6단계 (git pull → npm install → npm build → cp → gradlew → restart)
+- [x] Docker: 3단계 (git pull → docker build → docker compose up)
 
 ---
 
 ## 실행 명령어 참고
 
+### 로컬 개발
 ```bash
 # 프론트엔드 의존성 설치 (최초 1회)
 cd frontend && npm install
 
 # 개발 모드 (백엔드)
-./gradlew bootRun
+SPRING_PROFILES_ACTIVE=dev ./gradlew bootRun
 
 # 개발 모드 (프론트엔드 - 별도 터미널)
 cd frontend && npm run dev
-
-# 통합 빌드 (배포용)
-./gradlew clean bootJar
-
-# 빌드 결과물 위치
-# build/libs/kurumi-0.0.1-SNAPSHOT.jar
-
-# 배포 (scripts/deploy.sh 에서 서버 IP 수정 필요)
-./scripts/deploy.sh
 ```
 
----
+### Docker 배포 (서버)
+```bash
+# 서버 접속
+ssh root@115.68.207.104
 
-## 서버 배포 순서
+# 업데이트 배포
+cd /opt/kurumi
+git pull
+docker compose down && docker build -t kurumi:latest . && docker compose up -d
 
-1. **서버 초기 설정** (최초 1회)
-   ```bash
-   # 서버에 scripts/server-setup.sh 업로드 후 실행
-   chmod +x server-setup.sh
-   ./server-setup.sh
-   ```
+# 로그 확인
+docker compose logs -f
 
-2. **환경변수 수정**
-   ```bash
-   sudo nano /etc/systemd/system/kurumi.service
-   # JWT_SECRET, DB_URL, DB_USERNAME, DB_PASSWORD 수정
-   sudo systemctl daemon-reload
-   ```
+# 컨테이너 상태 확인
+docker ps
+```
 
-3. **배포**
-   ```bash
-   # 로컬에서 실행
-   ./scripts/deploy.sh
-   ```
+### 로컬 Docker 테스트
+```bash
+# 이미지 빌드
+docker build -t kurumi:latest .
+
+# 실행 (.env 파일 필요)
+docker compose up -d
+
+# 접속: http://localhost:8080
+```
