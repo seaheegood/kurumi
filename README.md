@@ -170,7 +170,7 @@ curl -X POST http://localhost:8080/api/auth/register \
 
 Docker를 사용하여 배포합니다.
 
-- 배포 방법: [DEPLOY.md](./DEPLOY.md)
+- 배포/업데이트 가이드: [UPDATE.md](./UPDATE.md)
 - Docker 설정 상세: [DOCKER.md](./DOCKER.md)
 
 ---

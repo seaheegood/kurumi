@@ -1,142 +1,70 @@
-# Kurumi Update Log
-
-## v1.2.0 (2026-01-06) - 현재 배포 버전
+# Kurumi 업데이트 및 배포 가이드
 
 > 배포 URL: https://kurumi.hongshin99.com
 
-### Docker 컨테이너화
+---
 
-기존 수동 배포 방식에서 Docker 기반 배포로 전환했습니다.
+## 배포 방법 (Docker)
 
-#### 도입 배경
-- 로컬(Mac)과 서버(Ubuntu)의 Node.js 버전 차이로 인한 빌드 결과물 불일치 문제 해결
+### 업데이트 배포
+```bash
+cd /opt/kurumi && git pull && docker compose down && docker build -t kurumi:latest . && docker compose up -d
+```
+
+### 배포 확인
+```bash
+docker ps                                                    # 컨테이너 상태
+docker inspect --format='{{.State.Health.Status}}' kurumi-app  # 헬스체크
+docker compose logs -f                                       # 로그
+```
+
+자세한 Docker 설정은 [DOCKER.md](./DOCKER.md) 참조
+
+---
+
+## 버전 기록
+
+### v1.2.0 (2026-01-06) - 현재 버전
+
+**Docker 컨테이너화**
+- 로컬/서버 Node.js 버전 차이로 인한 빌드 불일치 문제 해결
 - 배포 프로세스 단순화 (6단계 → 3단계)
-- 일관된 빌드 환경 보장
+- 멀티 스테이지 빌드로 이미지 최적화
 
-#### 새로운 파일
-- `Dockerfile` - 멀티 스테이지 빌드 설정
-  - Stage 1: Node.js 24 Alpine (프론트엔드 빌드)
-  - Stage 2: Gradle 8.11 + JDK 17 (백엔드 빌드)
-  - Stage 3: Eclipse Temurin JRE 17 Alpine (실행 이미지)
-- `docker-compose.yml` - 컨테이너 실행 설정
-- `.dockerignore` - Docker 빌드 제외 파일
-- `.env.example` - 환경변수 템플릿
+**새로운 파일**
+- `Dockerfile`, `docker-compose.yml`, `.dockerignore`, `.env.example`
 
-#### 배포 방식 변경
-
-**기존 (6단계)**
-```bash
-git pull
-cd frontend && npm install && npm run build
-cp -r dist/* /var/www/kurumi/
-cd .. && ./gradlew bootJar
-systemctl restart kurumi
-```
-
-**Docker (3단계)**
-```bash
-git pull
-docker compose down && docker build -t kurumi:latest .
-docker compose up -d
-```
-
-#### 서버 환경
-- Docker 29.1.3
-- Docker Compose v5.0.1
-- 헬스체크: `/api/menus` 엔드포인트 (30초 간격)
+**서버 환경**
+- Docker 29.1.3, Docker Compose v5.0.1
 
 ---
 
-## v1.1.0 (2026-01-05)
+### v1.1.0 (2026-01-05)
 
-> 배포 URL: https://kurumi.hongshin99.com
+**새 기능**
+- 오늘의 메뉴 유지 기능 (다음날에도 그대로 표시)
+- 이미지 파일 업로드 (최대 10MB)
+- 오늘의 메뉴 템플릿 선택 기능
+- 이미지 자동 정리 (메뉴당 1개만 유지)
+- 관리자 대시보드 개선
 
-### New Features
-
-#### 1. 오늘의 메뉴 유지 기능
-- 오늘의 메뉴를 한번 설정하면 다음날에도 수정하지 않는 한 그대로 유지
-- 오늘 날짜에 메뉴가 없을 경우 가장 최근에 등록된 메뉴를 자동으로 표시
-
-#### 2. 이미지 파일 업로드 기능
-- 메뉴 및 오늘의 메뉴에 핸드폰/컴퓨터에서 직접 이미지 파일 업로드 가능
-- 최대 10MB 이미지 파일 지원
-- 업로드된 이미지는 서버의 `/uploads` 폴더에 저장
-
-#### 3. 메뉴 카테고리 개선
-- "전체" 탭 제거
-- 카테고리: 안주, 주류, 음료
-
-#### 4. 오늘의 메뉴 템플릿 선택 기능
-- 이전에 등록했던 오늘의 메뉴 목록에서 선택하여 바로 추가 가능
-- 매번 새로 입력할 필요 없이 기존 메뉴 재사용
-- 템플릿 수정 기능 (이름, 가격, 설명, 이미지 변경)
-
-#### 5. 이미지 자동 정리 기능
-- 메뉴당 이미지 1개만 저장
-- 이미지 변경 시 기존 이미지 파일 서버에서 자동 삭제
-- 불필요한 이미지 파일 축적 방지
-
-#### 6. 관리자 대시보드 개선
-- 오늘 날짜 표시
-- 통계 카드 클릭 시 해당 관리 페이지로 이동
-- 오늘의 메뉴 현황 (이미지 포함)
-- 최근 공지사항 미리보기
-- 등록된 메뉴 목록 표시
-- 각 섹션별 바로가기 링크
-
-### Removed
-
-#### 예약 서비스 제거
-- 예약 기능 전체 삭제 (프론트엔드 + 백엔드)
-
-### Changed Files
-
-**신규 파일:**
-- `src/main/java/dev/hong/kurumi/service/FileStorageService.java`
-- `src/main/java/dev/hong/kurumi/controller/FileUploadController.java`
-
-**변경 파일:**
-- `src/main/java/dev/hong/kurumi/repository/DailyMenuRepository.java`
-- `src/main/java/dev/hong/kurumi/service/DailyMenuService.java`
-- `src/main/java/dev/hong/kurumi/controller/DailyMenuController.java`
-- `src/main/java/dev/hong/kurumi/config/WebConfig.java`
-- `src/main/java/dev/hong/kurumi/config/SpaWebConfig.java`
-- `src/main/java/dev/hong/kurumi/config/SecurityConfig.java`
-- `frontend/src/api/menu.ts`
-- `frontend/src/pages/admin/MenuManagePage.tsx`
-- `frontend/src/pages/admin/DailyMenuPage.tsx`
-- `frontend/src/pages/admin/DashboardPage.tsx`
-- `frontend/src/pages/public/MenuPage.tsx`
-- `frontend/src/pages/public/HomePage.tsx`
-- `frontend/src/components/common/Header.tsx`
-- `frontend/src/components/common/AdminLayout.tsx`
-- `frontend/src/App.tsx`
-- `frontend/src/types/index.ts`
-
-**삭제된 파일:**
-- `src/main/java/dev/hong/kurumi/entity/Reservation.java`
-- `src/main/java/dev/hong/kurumi/repository/ReservationRepository.java`
-- `src/main/java/dev/hong/kurumi/service/ReservationService.java`
-- `src/main/java/dev/hong/kurumi/controller/ReservationController.java`
-- `frontend/src/pages/public/ReservationPage.tsx`
-- `frontend/src/pages/admin/ReservationManagePage.tsx`
-- `frontend/src/api/reservation.ts`
-
-### Deployment Info
-
-- **서버**: Ubuntu (115.68.207.104)
-- **도메인**: kurumi.hongshin99.com
-- **웹서버**: Apache2 (프론트엔드 서빙 + API 프록시)
-- **백엔드**: Spring Boot (포트 8080, systemd 서비스)
-- **데이터베이스**: MySQL (외부 서버)
+**제거**
+- 예약 서비스 전체 삭제
 
 ---
 
-## v1.0.0 (2026-01-03) - Initial Release
+### v1.0.0 (2026-01-03) - 최초 배포
 
+**기능**
 - 메뉴 관리 (CRUD)
 - 오늘의 메뉴 관리
 - 공지사항 관리
-- 예약 관리
 - 관리자 인증 (JWT)
 - 반응형 웹 디자인
+
+**배포 환경**
+- 서버: Ubuntu (115.68.207.104)
+- 도메인: kurumi.hongshin99.com
+- 웹서버: Apache2 + Let's Encrypt SSL
+- 백엔드: Spring Boot 3.5.7
+- 데이터베이스: MySQL (외부 서버)

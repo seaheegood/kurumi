@@ -58,6 +58,9 @@ application-prod.properties
 Deploy.md
 upload.md
 
+### Personal ###
+INTERVIEW.md
+
 ### OS ###
 .DS_Store
 Thumbs.db
